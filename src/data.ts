@@ -1,182 +1,99 @@
-import qrcodegen from "nayuki-qr-code-generator";
-import { CrossNeighbor, IQRCodeData, ModuleType, Segment, SegmentType } from "./types";
+import qrcodegen from "nayuki-qr-code-generator"
+import { DataType, ECC, IQRData, PositionalType } from "./types"
+import QrCode = qrcodegen.QrCode
 
-export class QRCodeData implements IQRCodeData {
-    private _text: string;
-    private _ecc: string;
-    private _data: ModuleType[][];
-    private _size: number;
-    private _quiteZone: number;
-
-    constructor(text: string, ecc: string, quiteZone: number = 4) {
-        this._text = text;
-        this._ecc = ecc;
-        this._quiteZone = quiteZone;
-        this._size = size;
-
-        this._generate();
-    }
+export class QRData implements IQRData {
+    readonly REMOVAL_PERCENTAGE = 25;
+    readonly FINDER_NUM_DOTS = 7;
     
-    get modules(): ModuleType[][] {
-        return this._data;
+    data: DataType[][];
+    positions: PositionalType[][];
+    dataSize: number;
+    private _logoSpace: number;
+    private _virtualDotSize: number;
+
+    constructor(text: string, ecc?: ECC, options?: any) {
+        this.positions = [];
+        this.data = [];
+        ecc = ecc ?? ECC.MEDIUM;
+        options = options ?? {
+            excludeDataForLogo: false
+        }
+
+        const encoded = qrcodegen.QrCode.encodeText(text, toEngineECC(ecc));
+        const size = encoded.size;
+        this.dataSize = encoded.size;
+
+        // Calculate the space for the logo
+        const space = Math.round((size * this.REMOVAL_PERCENTAGE) / 100);
+        this._logoSpace = Math.round((size * this.REMOVAL_PERCENTAGE) / 100);
+
+        const isLogoSpace = (x: number, y: number) => {
+            if (!options.excludeDataForLogo) return false;
+            const center = Math.floor(size / 2);
+            return (x >= center - space / 2 && x < center + space / 2 && y >= center - space / 2 && y < center + space / 2);
+        }
+
+        for (let i = 0; i < encoded.size; i++) {
+            this.data[i] = [];
+            this.positions[i] = [];
+        }
+
+        function _isFinder(x: number, y: number): boolean {
+            return x >= 0 && x < this.FINDER_NUM_DOTS && y >= 0 && y < this.FINDER_NUM_DOTS
+            || x >= encoded.size - this.FINDER_NUM_DOTS && x < encoded.size && y >= 0 && y < this.FINDER_NUM_DOTS
+            || x >= 0 && x < this.FINDER_NUM_DOTS && y >= encoded.size - this.FINDER_NUM_DOTS && y < encoded.size;
+        }
+
+        function _isInnerFinder(x: number, y: number): boolean {
+            return x >= 1 && x < this.FINDER_NUM_DOTS - 1 && y >= 1 && y < this.FINDER_NUM_DOTS - 1
+            || x >= encoded.size - this.FINDER_NUM_DOTS + 1 && x < encoded.size - 1 && y >= 1 && y < this.FINDER_NUM_DOTS - 1
+            || x >= 1 && x < this.FINDER_NUM_DOTS - 1 && y >= encoded.size - this.FINDER_NUM_DOTS + 1 && y < encoded.size - 1;
+        }
+
+        for (let y = 0; y < encoded.size; y++) {
+            for (let x = 0; x < encoded.size; x++) {
+                const m = encoded.getModule(x, y);
+                if (m) {
+                    this.data[x][y] = isLogoSpace(x, y) ? DataType.None : DataType.Data;
+                } else {
+                    this.data[x][y] = DataType.None;
+                }
+            }
+        }
     }
 
     get size(): number {
-        return this._data.length;
+        return this.dataSize
     }
 
-    get quiteZone(): number {
-        return this._quiteZone;
+    get dotSize(): number {
+        return this._virtualDotSize
     }
 
-    async setText(text: string): Promise<void> {
-        this._text = text;
-        await this._generate();
+    at(x: number, y: number): DataType {
+        throw new Error("Method not implemented.")
     }
 
-    async setEcc(ecc: string): Promise<void> {
-        this._ecc = ecc;
-        await this._generate();
+    positionTypeAt(x: number, y: number): PositionalType {
+        throw new Error("Method not implemented.")
     }
 
-    get data(): ModuleType[][] {
-        return this._data;
+    walk(fn: (x: number, y: number, dataType: DataType) => void): void {
+        throw new Error("Method not implemented.")
     }
+}
 
-    findSegments(type: SegmentType, fn: (segment: Segment) => void): void {
-        let segmenting = false;
-        let startX: number = 0;
-        let startY: number = 0;
-        let lastX: number = 0;
-        let lastY: number = 0;
-
-        if (type === SegmentType.Horizontal) {
-            for (let y = 0; y < this._data.length; y++) {
-                for (let x = 0; x < this._data[y].length; x++) {
-                    if (this._data[y][x] === ModuleType.Data) {
-                        if (!segmenting) {
-                            segmenting = true;
-                            startX = x;
-                            startY = y;
-                        }
-                    } else {
-                        if (segmenting) {
-                            segmenting = false;
-                            lastX = x - 1;
-                            lastY = y;
-                            fn({ type: type, startX: startX, startY: startY, endX: lastX, endY: lastY });
-                        }
-                    }
-                }
-            }
-        } else {
-            for (let x = 0; x < this._data[0].length; x++) {
-                for (let y = 0; y < this._data.length; y++) {
-                    if (this._data[y][x] === ModuleType.Data) {
-                        if (!segmenting) {
-                            segmenting = true;
-                            startX = y;
-                            startY = x;
-                        }
-                    } else {
-                        if (segmenting) {
-                            segmenting = false;
-                            lastX = y - 1;
-                            lastY = x;
-                            fn({ type: type, startX: startX, startY: startY, endX: lastX, endY: lastY });
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    findCrossNeighbors(fn: (cross: CrossNeighbor) => void): void {
-        for (let y = 0; y < this._data.length; y++) {
-            for (let x = 0; x < this._data[y].length; x++) {
-                if (this._data[y][x] === ModuleType.Data) {
-                    if (y > 0 && y < this._data.length - 1 && x > 0 && x < this._data[y].length - 1) {
-                        fn({
-                            x: x,
-                            y: y,
-                            rightTopCross: this._data[y - 1][x] === ModuleType.Data && this._data[y][x + 1] === ModuleType.Data,
-                            leftTopCross: this._data[y - 1][x] === ModuleType.Data && this._data[y][x - 1] === ModuleType.Data,
-                            leftBottomCross: this._data[y + 1][x] === ModuleType.Data && this._data[y][x - 1] === ModuleType.Data,
-                            rightBottomCross: this._data[y + 1][x] === ModuleType.Data && this._data[y][x + 1] === ModuleType.Data
-                        })
-                    }
-                }
-            }
-        }
-    }
-
-    findLogoSegment(fn: (segment: Segment) => void): void {
-        // logo size either 7 or 8 cell length
-        const logoStartIndex = this._size % 2 ? (this._size / 2) - 4 : Math.floor(this._size / 2) - 3;
-        const logoEndIndex = this._size % 2 ? (this._size / 2) + 3 : Math.ceil(this._size / 2) + 3;
-
-        fn({
-            type: SegmentType.Horizontal,
-            startX: logoStartIndex,
-            startY: logoStartIndex,
-            endX: logoEndIndex,
-            endY: logoEndIndex
-        });
-    }
-    
-    private async _generate(): Promise<void> {
-        const qrcodegen = (await import("nayuki-qr-code-generator")).default;
-        const segments = qrcodegen.QrSegment.makeSegments(this._text);
-        
-        let ecc: qrcodegen.QrCode.Ecc = qrcodegen.QrCode.Ecc.LOW;
-        switch (this._ecc) {
-            case "M":
-                ecc = qrcodegen.QrCode.Ecc.MEDIUM;
-                break;
-            case "Q":
-                ecc = qrcodegen.QrCode.Ecc.QUARTILE;
-                break;
-            case "H":
-                ecc = qrcodegen.QrCode.Ecc.HIGH;
-                break;
-        }
-
-        function innerEye(x: number, y: number, size: number): boolean {
-            return ((x > 0 && y > 0) && (x < 6 && y < 6)) // top left
-            || (x > (size - 7) && y > 0 && (x < (size - 1) && y < 6)) // top right
-            || (x > 0 && y > (size - 7)) && (x < 6 && y < (size -1))
-        }
-
-        function eye(x: number, y: number, size: number): boolean {
-            return ((x >= 0 && y >= 0) && (x <= 6 && y <= 6)) // top left
-            || (x >= (size - 7) && y >= 0 && (x <= (size - 1) && y <= 6)) // top right
-            || (x >= 0 && y >= (size - 7)) && (x <= 6 && y <= (size -1))
-        }
-
-        function moduleByPixel(fill: boolean, x: number, y: number): ModuleType {
-            if (!fill) return ModuleType.None;
-
-            if (innerEye(x, y, this._size)) {
-                return ModuleType.InnerEye;
-            } else if (eye(x, y, this._size)) {
-                return ModuleType.OuterEye;
-            } else {
-                return ModuleType.Data;
-            }
-        }
-
-        // encode segments into a QR code
-        const qr = qrcodegen.QrCode.encodeSegments(segments, ecc, qrcodegen.QrCode.MIN_VERSION, qrcodegen.QrCode.MAX_VERSION, -1, false);
-        this._size = qr.size;
-
-        // enrich data by determine style parts
-        this._data = [];
-
-        for (let y = 0; y < qr.size; y++) {
-            for (let x = 0; x < qr.size; x++) {
-                const fill = qr.getModule(x, y);
-                this._data[y][x] = moduleByPixel(fill, x, y);
-            }
-        }
+function toEngineECC(ecc: ECC): QrCode.Ecc
+{
+    switch (ecc) {
+        case ECC.LOW:
+            return QrCode.Ecc.LOW
+        case ECC.MEDIUM:
+            return QrCode.Ecc.MEDIUM
+        case ECC.HIGH:
+            return QrCode.Ecc.HIGH
+        default:
+            throw new Error(`Invalid ECC: ${ecc}`)
     }
 }

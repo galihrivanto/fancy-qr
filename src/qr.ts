@@ -1,51 +1,46 @@
-import { IQRCode, IQRCodeOptions, Options } from "./types";
+import type { DataType, ILogoOptions, IQRCode, IQROptions, IShapeOptions, Size } from "./types";
 
 export class QRCode implements IQRCode {
-    private _options: Options;
-    private _canvas: HTMLCanvasElement;
-    private _size: number;
-    private _visibleParts: string[];
+    private _size: Size;
+    private _options: IQROptions;
 
-    constructor(options: IQRCodeOptions) {
-        this._size = options.size;
-        this._visibleParts = options.visibleParts;
-        this._options = this.defaultOptions;
+    constructor(size?: Size) {
+        this._size = size ?? { width: 640, height: 640 };
     }
 
-    private get defaultOptions(): Options {
-        return {
-            text: "",
-            ecc: "M",
-            size: 256,
-            style: {
-                innerEye: {
-                    fill: "black",
-                    shape: "default"
-                },
-                outerEye: {
-                    fill: "black",
-                    shape: "default"
-                },
-                background: {
-                    fill: "white"
-                },
-                module: {
-                    fill: "black",
-                    shape: "default"
-                }
-            }
-        };
-    }
-
-    setOptions(options: Options): void {
+    get options(): IQROptions {
         throw new Error("Method not implemented.");
     }
 
-    renderToCanvas(canvas: HTMLCanvasElement): void {
-        this._canvas = canvas;
-    }
-
-    private render(): void {
+    set options(options: IQROptions) {
         throw new Error("Method not implemented.");
     }
+
+    attachTo(htmlElement: HTMLElement): void {
+        throw new Error("Method not implemented.");
+    }
+
+    setText(text: string): void {
+        throw new Error("Method not implemented.");
+    }
+
+    setLogo(logo: ILogoOptions): void {
+        throw new Error("Method not implemented.");
+    }
+
+    setOuterFinder(outerFinder: IShapeOptions): void {
+        throw new Error("Method not implemented.");
+    }
+
+    setInnerFinder(innerFinder: IShapeOptions): void {
+        throw new Error("Method not implemented.");
+    }
+
+    setData(data: IShapeOptions): void {
+        throw new Error("Method not implemented.");
+    }
+
+    generateAssets(size: number, type: DataType): Promise<HTMLImageElement[]> {
+        throw new Error("Method not implemented.");
+    }    
 }
