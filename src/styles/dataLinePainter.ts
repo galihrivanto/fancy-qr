@@ -12,10 +12,11 @@ export class DataRoundLinePainter extends BasePainter {
     paint(
         canvas: HTMLCanvasElement,
         encodedData: IQRData,
+        bounds: DOMRect,
         options: IShapeOptions
     ): void {
         const drawFn = (ctx: CanvasRenderingContext2D, orientation: SegmentOrientation) => {
-            this.enumerateSegmentBounds(encodedData, orientation, (rect) => {
+            this.enumerateSegmentBounds(encodedData, bounds, orientation, (rect) => {
                 const size = orientation === SegmentOrientation.Vertical ? rect.width : rect.height;
                 const offset = size / 2.0;
                 const h = rect.width - 2 * offset;
@@ -78,14 +79,15 @@ export class DataArrowLinePainter extends BasePainter {
     paint(
         canvas: HTMLCanvasElement,
         encodedData: IQRData,
+        bounds: DOMRect,
         options: IShapeOptions
     ): void {
         this.withFillPainter(canvas, options.fill, (ctx) => {
-            this.enumerateSegmentBounds(encodedData, SegmentOrientation.Vertical, (rect) => {
+            this.enumerateSegmentBounds(encodedData, bounds, SegmentOrientation.Vertical, (rect) => {
                 this.drawVerticalArrowLine(ctx, rect);
             });
 
-            this.enumerateSegmentBounds(encodedData, SegmentOrientation.Horizontal, (rect) => {
+            this.enumerateSegmentBounds(encodedData, bounds, SegmentOrientation.Horizontal, (rect) => {
                 this.drawHorizontalArrowLine(ctx, rect);
             });
         });
@@ -130,15 +132,16 @@ export class DataRibbonLinePainter extends BasePainter {
     paint(
         canvas: HTMLCanvasElement,
         encodedData: IQRData,
+        bounds: DOMRect,
         options: IShapeOptions
     ): void {
         this.withFillPainter(canvas, options.fill, (ctx) => {
-            if (this._orientation === SegmentOrientation.Vertical) {
-                this.enumerateSegmentBounds(encodedData, SegmentOrientation.Vertical, (rect) => {
+            if (this._orientation === SegmentOrientation.Vertical) {  
+                this.enumerateSegmentBounds(encodedData, bounds, SegmentOrientation.Vertical, (rect) => {
                     this.drawVerticalRibbon(ctx, rect);
                 });
-            } else {
-                this.enumerateSegmentBounds(encodedData, SegmentOrientation.Horizontal, (rect) => {
+            } else {    
+                this.enumerateSegmentBounds(encodedData, bounds, SegmentOrientation.Horizontal, (rect) => {
                     this.drawHorizontalRibbon(ctx, rect);
                 });
             }

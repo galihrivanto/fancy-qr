@@ -84,6 +84,7 @@ export interface IPainter {
     paint(
         canvas: HTMLCanvasElement,
         encodedData: IQRData,
+        bounds: DOMRect,
         options: IShapeOptions
     ): void;
 }

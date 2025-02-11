@@ -22,10 +22,11 @@ export class DataDiamondPainter extends BasePainter {
     paint(
         canvas: HTMLCanvasElement,
         encodedData: IQRData,
+        bounds: DOMRect,
         options: IShapeOptions
     ): void {
         this.withFillPainter(canvas, options.fill, (ctx) => {
-            this.enumeratePositionalBounds(encodedData, (rect, type) => {
+            this.enumeratePositionalBounds(encodedData, bounds, (rect, type) => {
                 this.drawDiamond(ctx, rect);
             });
         })
@@ -59,10 +60,11 @@ export class DataCrossPainter extends BasePainter {
     paint(
         canvas: HTMLCanvasElement,
         encodedData: IQRData,
+        bounds: DOMRect,
         options: IShapeOptions
     ): void {
         this.withFillPainter(canvas, options.fill, (ctx) => {
-            this.enumeratePositionalBounds(encodedData, (rect, type) => {
+            this.enumeratePositionalBounds(encodedData, bounds, (rect, type) => {
                 this.drawCross(ctx, rect);
             });
         })
@@ -84,10 +86,11 @@ export class DataCirclePainter extends BasePainter {
     paint(
         canvas: HTMLCanvasElement,
         encodedData: IQRData,
+        bounds: DOMRect,
         options: IShapeOptions
     ): void {
         this.withFillPainter(canvas, options.fill, (ctx) => {
-            this.enumerateDotBounds(encodedData, DataType.Data, (rect) => {
+            this.enumerateDotBounds(encodedData, bounds, DataType.Data, (rect) => {
                 this.drawCircle(ctx, rect);
             });
         })
@@ -114,17 +117,18 @@ export class DataBeehivePainter extends BasePainter {
     paint(
         canvas: HTMLCanvasElement,
         encodedData: IQRData,
+        bounds: DOMRect,
         options: IShapeOptions
     ): void {
         this.withFillPainter(canvas, options.fill, (ctx) => {
-            this.enumerateDotBounds(encodedData, DataType.Data, (rect) => {
+            this.enumerateDotBounds(encodedData, bounds, DataType.Data, (rect) => {
                 this.drawBeehive(ctx, rect);
             });
         })
     }
 }
 
-export class DataSquarePainter extends BasePainter {
+export class DataCircuitPainter extends BasePainter {
     private readonly _withPad: boolean
 
     constructor(withPad?: boolean) {
@@ -135,10 +139,11 @@ export class DataSquarePainter extends BasePainter {
     paint(
         canvas: HTMLCanvasElement,
         encodedData: IQRData,
+        bounds: DOMRect,
         options: IShapeOptions
     ): void {
         this.withFillPainter(canvas, options.fill, (ctx) => {
-            this.enumerateCrossConnections(encodedData, (from, to, columnOffset) => {
+            this.enumerateCrossConnections(encodedData, bounds, (from, to, columnOffset) => {
                 const offset = from.bounds.width / 4
                 if (this._withPad) {
                     from.bounds = PadRect(from.bounds, offset / 2, offset / 2)

@@ -11,13 +11,17 @@ export abstract class BasePainter implements IPainter {
      */
     protected enumerateDotBounds(
         data: IQRData,
+        bounds: DOMRect,
         filter: DataType,
         cb: (rect: DOMRect) => void
     ) {
         const dotSize = data.dotSize;
+        const offsetX = bounds.x;
+        const offsetY = bounds.y;
+
         data.walk((col, row, dataType) => {
             if (dataType === filter) {
-                const rect = new DOMRect(col * dotSize, row * dotSize, dotSize, dotSize)
+                const rect = new DOMRect(col * dotSize + offsetX, row * dotSize + offsetY, dotSize, dotSize)
                 cb(rect)
             }
         })
@@ -30,9 +34,13 @@ export abstract class BasePainter implements IPainter {
      */
     protected enumerateCrossConnections(
         data: IQRData,
+        bounds: DOMRect,
         cb: (from: DotPosition, to: DotPosition, columnOffset: number) => void
     ) {
         const dotSize = data.dotSize;
+        const offsetX = bounds.x;
+        const offsetY = bounds.y;
+
         for (let row = 0; row < data.size; row++) {
             for (let col = 0; col < data.size; col++) {
                 if (data.at(col, row) === DataType.Data) {
@@ -41,9 +49,10 @@ export abstract class BasePainter implements IPainter {
                     if (data.at(col + 1, row + 1) === DataType.Data) {
                         connected = true
                         const toRect = new DOMRect(
-                            (col + 1) * dotSize,
-                            (row + 1) * dotSize,
+                            (col + 1) * dotSize + offsetX,
+                            (row + 1) * dotSize + offsetY,
                             dotSize,
+                            dotSize
                         )
 
                         cb({ row, col, bounds: fromRect }, { row: row + 1, col: col + 1, bounds: toRect }, 1)
@@ -52,8 +61,8 @@ export abstract class BasePainter implements IPainter {
                     if (data.at(col - 1, row + 1) === DataType.Data) {
                         connected = true
                         const toRect = new DOMRect(
-                            (col - 1) * dotSize,
-                            (row + 1) * dotSize,
+                            (col - 1) * dotSize + offsetX,
+                            (row + 1) * dotSize + offsetY,
                             dotSize,
                             dotSize
                         )
@@ -76,10 +85,13 @@ export abstract class BasePainter implements IPainter {
      */
     protected enumerateSegmentBounds(
         data: IQRData,
+        bounds: DOMRect,
         orientation: SegmentOrientation,
         cb: (rect: DOMRect) => void
     ): void {
         const dotSize = data.dotSize;
+        const offsetX = bounds.x;
+        const offsetY = bounds.y;
 
         if (orientation === SegmentOrientation.Horizontal) {
             for (let row = 0; row < data.size; row++) {
@@ -89,8 +101,8 @@ export abstract class BasePainter implements IPainter {
                         while (data.at(++col, row) === DataType.Data) {
                         }
                         const length = col - start;
-                        const left = start * dotSize;
-                        const top = row * dotSize;
+                        const left = start * dotSize + offsetX;
+                        const top = row * dotSize + offsetY;
 
                         const rect = new DOMRect(left, top, length * dotSize, dotSize)
 
@@ -106,8 +118,8 @@ export abstract class BasePainter implements IPainter {
                         while (data.at(col, ++row) === DataType.Data) {
                         }
                         const length = row - start;
-                        const left = col * dotSize;
-                        const top = start * dotSize;
+                        const left = col * dotSize + offsetX;
+                        const top = start * dotSize + offsetY;
 
                         const rect = new DOMRect(left, top, dotSize, length * dotSize)
 
@@ -120,12 +132,14 @@ export abstract class BasePainter implements IPainter {
 
     protected enumeratePositionalBounds(
         data: IQRData,
+        bounds: DOMRect,
         cb: (rect: DOMRect, pos: PositionalType) => void
     ) {
         const dotSize = data.dotSize;
+        const offset = bounds.x;
         data.walk((col, row, dataType) => {
             if (dataType === DataType.Data) {
-                const rect = new DOMRect(col * dotSize, row * dotSize, dotSize, dotSize)
+                const rect = new DOMRect(col * dotSize + offset, row * dotSize + offset, dotSize, dotSize)
                 cb(rect, data.positionTypeAt(col, row))
             }
         })
@@ -182,6 +196,7 @@ export abstract class BasePainter implements IPainter {
     abstract paint(
         canvas: HTMLCanvasElement,
         encodedData: IQRData,
+        bounds: DOMRect,
         options: IShapeOptions
     ): void;
 }

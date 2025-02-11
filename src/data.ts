@@ -5,7 +5,8 @@ import QrCode = qrcodegen.QrCode
 export class QRData implements IQRData {
     readonly REMOVAL_PERCENTAGE = 25;
     readonly FINDER_NUM_DOTS = 7;
-    
+    readonly QUIET_ZONE = 0;
+
     data: DataType[][];
     positions: PositionalType[][];
     dataSize: number;
@@ -55,9 +56,41 @@ export class QRData implements IQRData {
             for (let x = 0; x < encoded.size; x++) {
                 const m = encoded.getModule(x, y);
                 if (m) {
-                    this.data[x][y] = isLogoSpace(x, y) ? DataType.None : DataType.Data;
+                    if (_isFinder(x, y)) {
+                        this.data[x][y] = _isInnerFinder(x, y) ? DataType.InnerFinder : DataType.OuterFinder;
+                    } else {
+                        this.data[x][y] = isLogoSpace(x, y) ? DataType.None : DataType.Data;
+                    }
                 } else {
                     this.data[x][y] = DataType.None;
+                }
+            }
+        }
+
+        const isSpace = (x: number, y: number) => {
+            return this.at(x, y) === DataType.Background || this.at(x, y) === DataType.None
+        }
+
+        const isData = (x: number, y: number) => {
+            return this.at(x, y) === DataType.Data
+        }
+
+        for (let y = 0; y < size; y++) {
+            for (let x = 0; x < size; x++) {
+                if (isData(x, y)) {
+                    if (isSpace(x, y - 1) && isSpace(x + 1, y) && isSpace(x - 1, y) && isData(x, y + 1)) {
+                        this.positions[x][y] = PositionalType.North
+                    } else if (isSpace(x, y + 1) && isSpace(x + 1, y) && isSpace(x - 1, y) && isData(x, y - 1)) {
+                        this.positions[x][y] = PositionalType.South
+                    } else if (isSpace(x - 1, y) && isSpace(x, y + 1) && isSpace(x, y - 1) && isData(x + 1, y)) {
+                        this.positions[x][y] = PositionalType.West
+                    } else if (isSpace(x + 1, y) && isSpace(x, y + 1) && isSpace(x, y - 1) && isData(x - 1, y)) {
+                        this.positions[x][y] = PositionalType.East
+                    } else if (isSpace(x + 1, y) && isSpace(x, y + 1) && isSpace(x, y - 1) && isSpace(x - 1, y)) {
+                        this.positions[x][y] = PositionalType.Single
+                    } else {
+                        this.positions[x][y] = PositionalType.Middle
+                    }
                 }
             }
         }
@@ -67,20 +100,36 @@ export class QRData implements IQRData {
         return this.dataSize
     }
 
+    get logoSpace(): number {
+        return this._logoSpace
+    }
+
     get dotSize(): number {
         return this._virtualDotSize
     }
 
+    calculatePixelSize(width: number): void {
+        const totalDots = this.size + 2.0 * this.QUIET_ZONE
+        this._virtualDotSize = width / totalDots
+    }
+
     at(x: number, y: number): DataType {
-        throw new Error("Method not implemented.")
+        if (this.size > 0 && x >= 0 && x < this.size && y >= 0 && y < this.size) return this.data[x][y]
+        return DataType.None
     }
 
     positionTypeAt(x: number, y: number): PositionalType {
-        throw new Error("Method not implemented.")
-    }
+        if (this.size > 0 && x >= 0 && x < this.size && y >= 0 && y < this.size) return this.positions[x][y]
+        
+        return PositionalType.Single
+    }    
 
     walk(fn: (x: number, y: number, dataType: DataType) => void): void {
-        throw new Error("Method not implemented.")
+        for (let y = 0; y < this.size; y++) {
+            for (let x = 0; x < this.size; x++) {
+                fn(x, y, this.at(x, y))
+            }
+        }
     }
 }
 
