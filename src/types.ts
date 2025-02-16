@@ -1,79 +1,137 @@
-export enum ModuleType { 
-    None, // could be quite zone or background
+export enum ECC {
+    LOW = 7,
+    MEDIUM = 15,
+    QUARTILE = 25,
+    HIGH = 30
+}
+
+export enum DataType {
+    OuterFinder,
+    InnerFinder,
     Data,
-    OuterEye,
-    InnerEye
+    Background,
+    Handle,
+    None
 }
 
-/**
- * Represents a gradient with a starting color and an ending color.
- */
-export interface Gradient {
-    fromColor: string;
-    toColor: string;
-    type: 'linear' | 'radial';
+export enum PositionalType {
+    North,
+    East,
+    South,
+    West,
+    Middle,
+    Single
 }
 
-/**
- * Represents the fill type of a module style, which can be either a string or a gradient.
- */
-export type FillType = string | Gradient;
-
-/**
- * Represents the style of a QR code module.
- */
-export interface ModuleStyle {
-    shape: string;
-    fill: FillType;
+export enum SegmentOrientation {
+    Vertical,
+    Horizontal
 }
 
-/**
- * Represents the error correction level of a QR code.
- */
-export type Ecc = 'L' | 'M' | 'Q' | 'H';
-
-/**
- * Represents the overall style of a QR code.
- */
-export interface Style {
-    innerEye: ModuleStyle;
-    outerEye: ModuleStyle;
-    background: {
-        fill: FillType;
-    };
-    module: ModuleStyle;
-    logo?: string;
+export enum GradientType {
+    Linear,
+    Radial
 }
 
-export interface IStylePainter {
-    paint(): void;
+export type Size = {
+    width: number
+    height: number
 }
 
-export type IPainterFactory = (canvas: HTMLCanvasElement, style: Style, data: IQRCodeData) => IStylePainter;
+export type Color = string;
 
-/**
- * Represents the options for generating a QR code.
- */
-export interface Options {
+export type FillType = Color | GradientColor;
+
+export type DotPosition = {
+    row: number
+    col: number
+    bounds: DOMRect
+}
+
+export interface GradientColor {
+    from: Color
+    to: Color
+    type: GradientType
+}
+
+export interface IShapeOptions {
+    shape: string
+    fill: FillType
+}
+
+export enum LogoPosition {
+    Center,
+    Background
+}
+
+export interface ILogoOptions {
+    url: string
+    position: LogoPosition
+    alpha: number
+}
+
+export interface IQROptions {
     text: string;
-    ecc: Ecc;
-    size: number;
-    style: Style;
-    quiteZone?: number;
+    outerFinder: IShapeOptions
+    innerFinder: IShapeOptions
+    data: IShapeOptions
+    visibleParts: DataType[]
+    ecc: ECC
+    logo: ILogoOptions
 }
 
-/**
- * Represents the data of a generated QR code.
- */
-export interface IQRCodeData {
-    modules: ModuleType[][];
-    size: number;
-    quiteZone: number;
+export interface IPainter {
+    paint(
+        canvas: HTMLCanvasElement,
+        encodedData: IQRData,
+        bounds: DOMRect,
+        options: IShapeOptions
+    ): void;
 }
 
-export interface IQRCodeOptions {
-    size: number;
-    visibleParts: string[];
+export interface IPainterFactory {
+    make(type: DataType, name: string): IPainter;
+}
+
+export interface IQRData {
+    readonly FINDER_NUM_DOTS: number
+    readonly QUIET_ZONE: number
+
+    /**
+     * Gets the size of the QR code.
+     */
+    get size(): number;
+
+    /**
+     * Gets the size of the QR code dot.
+     */
+    get dotSize(): number;
+
+    /**
+     * Gets the data type at a given position.
+     * @param x - The x coordinate of the position.
+     * @param y - The y coordinate of the position.
+     */
+    at(x: number, y: number): DataType;
+
+    /**
+     * Gets the positional type at a given position.
+     * @param x - The x coordinate of the position.
+     * @param y - The y coordinate of the position.
+     */
+    positionTypeAt(x: number, y: number): PositionalType;
+
+    /**
+     * Walks through the QR code data.
+     * @param fn - The function to call for each position.
+     */
+    walk(fn: (x: number, y: number, dataType: DataType) => void): void;
+
+    /**
+     * Calculates the pixel size of the QR code.
+     * @param size - The size of the QR code.
+     */
+    calculatePixelSize(size: number): void;
 }
 
 /**
@@ -81,36 +139,55 @@ export interface IQRCodeOptions {
  */
 export interface IQRCode {
     /**
+     * Gets the data of the QR code.
+     */
+    get options(): IQROptions;
+
+    /**
      * Sets the options for generating the QR code.
      * @param options - The options for generating the QR code.
      */
-    setOptions(options: Options): void;
+    set options(options: IQROptions);
 
     /**
-     * Renders the QR code to a canvas element.
-     * @param canvas - The canvas element to render the QR code to.
+     * Renders the QR code to a html element.
+     * @param htmlElement - The HTML element to render the QR code to.
      */
-    renderToCanvas(canvas: HTMLCanvasElement): void;
-}
+    attachTo(htmlElement: HTMLElement): void;
 
-export enum SegmentType {
-    Horizontal,
-    Vertical
-}
+    /**
+     * Sets the text for the QR code.
+     * @param text - The text to set for the QR code.
+     */
+    setText(text: string): void;
 
-export interface Segment {
-    type: SegmentType,
-    startX: number;
-    startY: number;
-    endX: number;
-    endY: number;
-}
+    /**
+         * Sets the logo for the QR code.
+     * @param logo - The logo to set for the QR code.
+     */
+    setLogo(logo: ILogoOptions): void;
 
-export interface CrossNeighbor {
-    x: number,
-    y: number,
-    leftTopCross: boolean,
-    leftBottomCross: boolean,
-    rightTopCross: boolean,
-    rightBottomCross: boolean 
+    /**
+     * Sets the outer finder for the QR code.
+     * @param outerFinder - The outer finder to set for the QR code.
+     */
+    setOuterFinder(outerFinder: IShapeOptions): void;
+
+    /**
+     * Sets the inner finder for the QR code.
+     * @param innerFinder - The inner finder to set for the QR code.
+     */
+    setInnerFinder(innerFinder: IShapeOptions): void;
+
+    /**
+     * Sets the data for the QR code.
+     * @param data - The data to set for the QR code.
+     */
+    setData(data: IShapeOptions): void;
+
+    /**
+     * @param size - image target size in pixels
+     * @param type - data type of the QR Code blocks {@link DataType}
+     */
+    generateAssets(size: number, type: DataType): Promise<HTMLImageElement[]>;
 }
