@@ -122,7 +122,7 @@ export abstract class BasePainter implements IPainter {
                         const top = start * dotSize + offsetY;
 
                         const rect = new DOMRect(left, top, dotSize, length * dotSize)
-
+                        console.log(length, left, top, dotSize);
                         cb(rect)
                     }
                 }
@@ -162,7 +162,7 @@ export abstract class BasePainter implements IPainter {
         if (ctx === null) return;
 
         const isGradient = (fill: FillType): fill is GradientColor => {
-            return (fill as GradientColor) !== undefined;
+            return typeof fill === 'object' && (fill as GradientColor) !== undefined;
         }
 
         if (isGradient(fill)) {
@@ -182,7 +182,9 @@ export abstract class BasePainter implements IPainter {
             ctx.fillStyle = fill;
         }
 
+        ctx.beginPath();
         cb(ctx);
+        ctx.fill();
     }
 
     /**

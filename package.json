@@ -5,16 +5,19 @@
     "type": "module",
     "scripts": {
       "dev": "vite --host",
-      "build": "tsc && vite build",
+      "build": "vite build",
+      "build:samples": "vite build --mode samples",
       "preview": "vite preview"
     },
     "dependencies": {
         "nayuki-qr-code-generator": "^1.8.0"
     },
     "devDependencies": {
+      "@types/node": "^20.8.10",
       "autoprefixer": "^10.4.16",
       "typescript": "^5.2.2",
-      "vite": "^5.2.0"
+      "vite": "^5.2.0",
+      "vite-plugin-dts": "^3.6.4"
     }
   }
   

@@ -126,6 +126,12 @@ export interface IQRData {
      * @param fn - The function to call for each position.
      */
     walk(fn: (x: number, y: number, dataType: DataType) => void): void;
+
+    /**
+     * Calculates the pixel size of the QR code.
+     * @param size - The size of the QR code.
+     */
+    calculatePixelSize(size: number): void;
 }
 
 /**

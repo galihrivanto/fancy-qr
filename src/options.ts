@@ -20,29 +20,17 @@ export class Options implements IQROptions {
 
         this.outerFinder = {
             shape: 'Default',
-            fill: {
-                from: '#000000',
-                to: '#000000',
-                type: GradientType.Linear
-            }
+            fill: '#000000'
         }
 
         this.innerFinder = {
             shape: 'Default',
-            fill: {
-                from: '#000000',
-                to: '#000000',
-                type: GradientType.Linear
-            }
+            fill: '#000000'
         }
 
         this.data = {
             shape: 'Default',
-            fill: {
-                from: '#000000',
-                to: '#000000',
-                type: GradientType.Linear
-            }
+            fill: '#000000'
         }
 
         this.visibleParts = [

@@ -40,13 +40,13 @@ export class QRData implements IQRData {
             this.positions[i] = [];
         }
 
-        function _isFinder(x: number, y: number): boolean {
+        const _isFinder = (x: number, y: number): boolean => {
             return x >= 0 && x < this.FINDER_NUM_DOTS && y >= 0 && y < this.FINDER_NUM_DOTS
             || x >= encoded.size - this.FINDER_NUM_DOTS && x < encoded.size && y >= 0 && y < this.FINDER_NUM_DOTS
             || x >= 0 && x < this.FINDER_NUM_DOTS && y >= encoded.size - this.FINDER_NUM_DOTS && y < encoded.size;
         }
 
-        function _isInnerFinder(x: number, y: number): boolean {
+        const _isInnerFinder = (x: number, y: number): boolean => {
             return x >= 1 && x < this.FINDER_NUM_DOTS - 1 && y >= 1 && y < this.FINDER_NUM_DOTS - 1
             || x >= encoded.size - this.FINDER_NUM_DOTS + 1 && x < encoded.size - 1 && y >= 1 && y < this.FINDER_NUM_DOTS - 1
             || x >= 1 && x < this.FINDER_NUM_DOTS - 1 && y >= encoded.size - this.FINDER_NUM_DOTS + 1 && y < encoded.size - 1;
