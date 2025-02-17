@@ -1,23 +1,41 @@
 {
-    "name": "fancy-qr",
-    "private": true,
-    "version": "1.0.0",
-    "type": "module",
-    "scripts": {
-      "dev": "vite --host",
-      "build": "vite build",
-      "build:samples": "vite build --mode samples",
-      "preview": "vite preview"
-    },
-    "dependencies": {
-        "nayuki-qr-code-generator": "^1.8.0"
-    },
-    "devDependencies": {
-      "@types/node": "^20.8.10",
-      "autoprefixer": "^10.4.16",
-      "typescript": "^5.2.2",
-      "vite": "^5.2.0",
-      "vite-plugin-dts": "^3.6.4"
-    }
-  }
-  
+  "name": "@galihrivanto/fancy-qr",
+  "version": "1.0.0",
+  "description": "A QR code generator with fancy styles options.",
+  "type": "module",
+  "main": "./dist/fancyqr.es.js",
+  "types": "./dist/qr.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+      "nayuki-qr-code-generator": "^1.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.10",
+    "autoprefixer": "^10.4.16",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0",
+    "vite-plugin-dts": "^3.6.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/galihrivanto/fancy-qr.git"
+  },
+  "keywords": [
+    "qr",
+    "qrcode",
+    "qr-code",
+    "qr-code-generator",
+    "qr-code-generator-with-styles"
+  ],
+  "author": "Galih Rivanto",
+  "license": "MIT"
+}

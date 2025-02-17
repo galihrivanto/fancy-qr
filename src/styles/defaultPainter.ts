@@ -8,45 +8,14 @@ export class FinderDefaultPainter extends FinderBasePainter {
         super(isOuter)
     }
 
-    private drawDefault(ctx: CanvasRenderingContext2D, bounds: DOMRect) {
-        ctx.rect(bounds.x, bounds.y, bounds.width, bounds.height)
-    }
-
     protected drawFinder(ctx: CanvasRenderingContext2D, encodedData: IQRData, outerBounds: DOMRect, innerBounds: DOMRect) {
         if (this.isOuter) {
-            // Top bar
-            ctx.rect(
-                outerBounds.x,
-                outerBounds.y,
-                outerBounds.width,
-                innerBounds.y - outerBounds.y
-            );
-            
-            // Bottom bar
-            ctx.rect(
-                outerBounds.x,
-                innerBounds.y + innerBounds.height,
-                outerBounds.width,
-                (outerBounds.y + outerBounds.height) - (innerBounds.y + innerBounds.height)
-            );
-            
-            // Left bar
-            ctx.rect(
-                outerBounds.x,
-                innerBounds.y,
-                innerBounds.x - outerBounds.x,
-                innerBounds.height
-            );
-            
-            // Right bar
-            ctx.rect(
-                innerBounds.x + innerBounds.width,
-                innerBounds.y,
-                (outerBounds.x + outerBounds.width) - (innerBounds.x + innerBounds.width),
-                innerBounds.height
-            );
+            ctx.fillRect(outerBounds.x, outerBounds.y, outerBounds.width, outerBounds.height);
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillRect(innerBounds.x - innerBounds.width / 3, innerBounds.y - innerBounds.height / 3 , innerBounds.width * 5/3, innerBounds.height * 5/3);
+            ctx.globalCompositeOperation = 'source-over';
         } else {
-            this.drawDefault(ctx, innerBounds)
+            ctx.fillRect(innerBounds.x, innerBounds.y, innerBounds.width, innerBounds.height);
         }
     }
 }
@@ -63,9 +32,8 @@ export class DataDefaultPainter extends BasePainter {
         options: IShapeOptions
     ): void {
         this.withFillPainter(canvas, options.fill, (ctx: CanvasRenderingContext2D) => {
-            this.enumerateSegmentBounds(encodedData, bounds, SegmentOrientation.Vertical, (rect) => {
-                console.log('rect', rect);
-                ctx.rect(rect.x, rect.y, rect.width, rect.height)
+            this.enumerateSegmentBounds(encodedData, bounds, SegmentOrientation.Horizontal, (rect) => {
+                ctx.fillRect(rect.x, rect.y, rect.width + 0.5, rect.height + 0.5)
             })
         })
     }

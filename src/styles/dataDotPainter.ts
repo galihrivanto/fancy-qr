@@ -44,16 +44,23 @@ export class DataCrossPainter extends BasePainter {
         const largeStep = rect.width / 3;
 
         ctx.beginPath();
-        ctx.moveTo(rect.x + offset, rect.y);
-        ctx.lineTo(rect.right - largeStep, rect.y + smallStep);
-        ctx.lineTo(rect.right - largeStep, rect.y + largeStep);
-        ctx.lineTo(rect.right - smallStep, rect.y + largeStep);
-        ctx.lineTo(rect.right, rect.y + offset);
-        ctx.lineTo(rect.right - smallStep, rect.bottom - largeStep);
-        ctx.lineTo(rect.right - largeStep, rect.bottom - largeStep);
-        ctx.lineTo(rect.right - largeStep, rect.bottom - smallStep);
-        ctx.lineTo(rect.x + offset, rect.bottom);
-        ctx.closePath();
+        ctx.moveTo(rect.x + offset, rect.y)
+        ctx.lineTo(rect.right - largeStep, rect.y + smallStep)
+        ctx.lineTo(rect.right - largeStep, rect.y + largeStep)
+        ctx.lineTo(rect.right - smallStep, rect.y + largeStep)
+        ctx.lineTo(rect.right, rect.y + offset)
+        ctx.lineTo(rect.right - smallStep, rect.bottom - largeStep)
+        ctx.lineTo(rect.right - largeStep, rect.bottom - largeStep)
+        ctx.lineTo(rect.right - largeStep, rect.bottom - smallStep)
+        ctx.lineTo(rect.x + offset, rect.bottom)
+        ctx.lineTo(rect.x + largeStep, rect.bottom - smallStep)
+        ctx.lineTo(rect.x + largeStep, rect.bottom - largeStep)
+        ctx.lineTo(rect.x + smallStep, rect.bottom - largeStep)
+        ctx.lineTo(rect.x, rect.y + offset)
+        ctx.lineTo(rect.x + smallStep, rect.top + largeStep)
+        ctx.lineTo(rect.x + largeStep, rect.top + largeStep)
+        ctx.lineTo(rect.x + largeStep, rect.top + smallStep)
+        ctx.closePath()
         ctx.fill();
     }
 
@@ -104,13 +111,17 @@ export class DataBeehivePainter extends BasePainter {
 
     private drawBeehive(ctx: CanvasRenderingContext2D, rect: DOMRect) {
         const offset = rect.width / 2.0;
+        const div = rect.width / 3
         ctx.beginPath();
-        ctx.moveTo(rect.x + offset, rect.y);
-        ctx.lineTo(rect.right - offset, rect.y + offset);
-        ctx.lineTo(rect.right, rect.y + offset);
-        ctx.lineTo(rect.right - offset, rect.bottom);
-        ctx.lineTo(rect.x + offset, rect.bottom);
-        ctx.closePath();
+        ctx.moveTo(rect.right - div, rect.y)
+        ctx.quadraticCurveTo(rect.right - div, rect.top + div, rect.right, rect.top + div)
+        ctx.lineTo(rect.right, rect.bottom - div)
+        ctx.quadraticCurveTo(rect.right - div, rect.bottom - div, rect.right - div, rect.bottom)
+        ctx.lineTo(rect.left + div, rect.bottom)
+        ctx.quadraticCurveTo(rect.left + div, rect.bottom - div, rect.left, rect.bottom - div)
+        ctx.lineTo(rect.left, rect.top + div)
+        ctx.quadraticCurveTo(rect.left + div, rect.top + div, rect.left + div, rect.top)
+        ctx.closePath()
         ctx.fill();
     }
 
