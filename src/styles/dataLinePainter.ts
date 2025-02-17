@@ -22,19 +22,23 @@ export class DataRoundLinePainter extends BasePainter {
                 const h = rect.width - 2 * offset;
                 const v = rect.height - 2 * offset;
 
+                // draw a rounded rect
                 ctx.beginPath();
                 ctx.moveTo(rect.x + offset, rect.y);
-                ctx.lineTo(rect.x + offset + h, rect.y);
-                ctx.arcTo(rect.x + rect.width, rect.y + offset, rect.x + rect.width - offset, rect.y + offset, 45);
-                ctx.lineTo(rect.x + rect.width - offset, rect.y + rect.height - offset);
-                ctx.arcTo(rect.x + offset, rect.y + rect.height, rect.x + offset, rect.y + rect.height - offset, 45);
-                ctx.lineTo(rect.x + offset, rect.y + offset);
-                ctx.closePath();
-                ctx.stroke();
+                ctx.lineTo(rect.right - offset, rect.y);
+                ctx.arc(rect.right - offset, rect.y + offset, offset, -Math.PI/2, 0);
+                ctx.lineTo(rect.right, rect.bottom - offset);
+                ctx.arc(rect.right - offset, rect.bottom - offset, offset, 0, Math.PI/2);
+                ctx.lineTo(rect.x + offset, rect.bottom);
+                ctx.arc(rect.x + offset, rect.bottom - offset, offset, Math.PI/2, Math.PI);
+                ctx.lineTo(rect.x, rect.y + offset);
+                ctx.arc(rect.x + offset, rect.y + offset, offset, Math.PI, 3*Math.PI/2);
+                ctx.fill();
             })
         }
 
         this.withFillPainter(canvas, options.fill, (ctx) => {
+            console.log('orientation', this._orientation)
             if (this._orientation === undefined) {
                 drawFn(ctx, SegmentOrientation.Vertical);
                 drawFn(ctx, SegmentOrientation.Horizontal);
@@ -103,20 +107,24 @@ export class DataRibbonLinePainter extends BasePainter {
     }
 
     private drawVerticalRibbon(ctx: CanvasRenderingContext2D, rect: DOMRect) {
-        const offset = rect.height / 3.0;
-        const centerX = rect.x + rect.width / 2.0;
+        const width = rect.width;
+        const offset = width / 3.0;
+        const centerX = rect.x + width / 2.0;
+
         ctx.beginPath();
         ctx.moveTo(rect.x, rect.y);
+        ctx.lineTo(centerX, rect.y + offset);
         ctx.lineTo(rect.right, rect.y);
-        ctx.lineTo(rect.right - offset, centerX);
         ctx.lineTo(rect.right, rect.bottom);
-        ctx.lineTo(rect.x + offset, centerX);
+        ctx.lineTo(rect.x, rect.bottom);
         ctx.closePath();
+        ctx.fill();
     }
 
     private drawHorizontalRibbon(ctx: CanvasRenderingContext2D, rect: DOMRect) {
-        const offset = rect.width / 3.0;
-        const centerY = rect.y + rect.height / 2.0;
+        const height = rect.height;
+        const offset = height / 3.0;
+        const centerY = rect.y + height / 2.0;
 
         ctx.beginPath();
         ctx.moveTo(rect.x, rect.y);

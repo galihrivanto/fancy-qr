@@ -33,9 +33,45 @@ export class FinderBasePainter extends BasePainter {
             options.fill,
             (ctx: CanvasRenderingContext2D) => {
                 // draw the first (top left) finder based on the type (outer or inner)
-                this.drawFinder(ctx, encodedData,structuredClone(outerBounds), structuredClone(innerBounds));
+                this.drawFinder(ctx, encodedData, structuredClone(outerBounds), structuredClone(innerBounds));
 
-                // TODO: draw the right top finder and bottom left finder
+                // rotate 90 counter clockwise
+                // save current transform state
+                ctx.save();
+                
+                // translate to center of bounds
+                const center = this.getCenter(bounds);
+                ctx.translate(center.x, center.y);
+                
+                // rotate 90 degrees counter-clockwise (PI/2 radians)
+                ctx.rotate(-Math.PI/2);
+                
+                // translate back
+                ctx.translate(-center.x, -center.y);
+                
+                // draw the rotated finder
+                this.drawFinder(ctx, encodedData, structuredClone(outerBounds), structuredClone(innerBounds));
+                
+                // restore original transform
+                ctx.restore();
+
+                // draw right top finder
+                // save current transform state
+                ctx.save();
+                
+                ctx.translate(center.x, center.y);
+                
+                // rotate 90 degrees clockwise (PI/2 radians) 
+                ctx.rotate(Math.PI/2);
+                
+                // translate back
+                ctx.translate(-center.x, -center.y);
+                
+                // draw the rotated finder
+                this.drawFinder(ctx, encodedData, structuredClone(outerBounds), structuredClone(innerBounds));
+                
+                // restore original transform
+                ctx.restore();
             }
         )
     }

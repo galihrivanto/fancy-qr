@@ -122,7 +122,7 @@ export abstract class BasePainter implements IPainter {
                         const top = start * dotSize + offsetY;
 
                         const rect = new DOMRect(left, top, dotSize, length * dotSize)
-                        console.log(length, left, top, dotSize);
+                  
                         cb(rect)
                     }
                 }
@@ -173,7 +173,14 @@ export abstract class BasePainter implements IPainter {
                 gradient.addColorStop(1, gradientFill.to);
                 ctx.fillStyle = gradient;
             } else {
-                const gradient = ctx.createRadialGradient(0, 0, 0, canvas.width, canvas.height, canvas.width);
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const radius = Math.min(canvas.width, canvas.height) / 2;
+                
+                const gradient = ctx.createRadialGradient(
+                    centerX, centerY, 0,  // Inner circle center (x, y) and radius
+                    centerX, centerY, radius  // Outer circle center (x, y) and radius
+                );
                 gradient.addColorStop(0, gradientFill.from);
                 gradient.addColorStop(1, gradientFill.to);
                 ctx.fillStyle = gradient;
@@ -181,10 +188,10 @@ export abstract class BasePainter implements IPainter {
         } else {
             ctx.fillStyle = fill;
         }
+        ctx.lineWidth = 0;
+        ctx.imageSmoothingEnabled = false;
 
-        ctx.beginPath();
         cb(ctx);
-        ctx.fill();
     }
 
     /**

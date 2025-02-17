@@ -20,8 +20,8 @@ export class QRCode implements IQRCode {
     private _data: IQRData;
     private _painterFactory: IPainterFactory;
 
-    constructor(size?: Size) {
-        this._size = size ?? { width: 640, height: 640 };
+    constructor(size?: number) {
+        this._size = { width: size ?? 640, height: size ?? 640 };
         this._painterFactory = new PainterFactory();
         this._options = new Options();
     }
@@ -97,15 +97,12 @@ export class QRCode implements IQRCode {
     private draw(bounds: DOMRect): void {
         this.clearCanvas();
 
-        console.log(this._options.visibleParts);
         if (this._options.visibleParts.includes(DataType.OuterFinder)) {
-            console.log('outer finder');
             const painter = this._painterFactory.make(DataType.OuterFinder, this._options.outerFinder.shape);
             painter.paint(this._canvas, this._data, bounds, this._options.outerFinder);
         }
 
         if (this._options.visibleParts.includes(DataType.InnerFinder)) {
-            console.log('inner finder')
             const painter = this._painterFactory.make(DataType.InnerFinder, this._options.innerFinder.shape);
             painter.paint(this._canvas, this._data, bounds, this._options.innerFinder);
         }
