@@ -53,7 +53,7 @@ export class PainterFactory implements IPainterFactory {
         }
 
         this._outerFinderPainters = [
-            make('OuterFinder.Default', () => new FinderDefaultPainter(true)),
+            make('Default', () => new FinderDefaultPainter(true)),
             make('OuterFinder.Petal', () => new FinderPetalPainter(true)),
             make('OuterFinder.Drop', () => new FinderDropPainter(true)),
             make('OuterFinder.Circle', () => new FinderCirclePainter(true)),
@@ -61,7 +61,7 @@ export class PainterFactory implements IPainterFactory {
         ]
 
         this._innerFinderPainters = [
-            make('InnerFinder.Default', () => new FinderDefaultPainter(false)),
+            make('Default', () => new FinderDefaultPainter(false)),
             make('InnerFinder.Petal', () => new FinderPetalPainter(false)),
             make('InnerFinder.Drop', () => new FinderDropPainter(false)),
             make('InnerFinder.Circle', () => new FinderCirclePainter(false)),
@@ -69,7 +69,7 @@ export class PainterFactory implements IPainterFactory {
         ]
 
         this._dataPainters = [
-            make('Data.Default', () => new DataDefaultPainter()),
+            make('Default', () => new DataDefaultPainter()),
             make('Data.VLine', () => new DataRoundLinePainter(SegmentOrientation.Vertical)),
             make('Data.HLine', () => new DataRoundLinePainter(SegmentOrientation.Horizontal)),
             make('Data.VHLine', () => new DataRoundLinePainter()),

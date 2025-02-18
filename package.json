@@ -13,11 +13,13 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
+    "build:samples": "vite build --mode samples",
     "preview": "vite preview",
     "prepare": "npm run build"
   },
   "dependencies": {
-      "nayuki-qr-code-generator": "^1.8.0"
+    "@galihrivanto/dict": "^1.0.0",
+    "nayuki-qr-code-generator": "^1.8.0"
   },
   "devDependencies": {
     "@types/node": "^20.8.10",

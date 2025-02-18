@@ -15,6 +15,20 @@ export default defineConfig(({ command, mode }) => {
                 },
                 esbuild: {
                     drop: ['console', 'debugger']
+                },
+                build: {
+                    outDir: 'dist_examples',
+                    lib: {
+                        entry: resolve(__dirname, './examples/sample.ts'),
+                        name: pkg.name,
+                        fileName: (format) => `fancyqr.${format}.js`,
+                        formats: ['es']
+                    },
+                    rollupOptions: {
+                        input: {
+                            main: resolve(__dirname, 'index.html')
+                        }
+                    }
                 }
             }
         } else {
