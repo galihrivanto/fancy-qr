@@ -4,7 +4,9 @@ let innerFinderShape: string = 'InnerFinder.Drop';
 let outerFinderShape: string = 'OuterFinder.Drop';
 let dataShape: string = 'Data.Circle';
 
-const qr = new QRCode(480);
+const size = calculateQrSize(512);
+console.log('size', size);
+const qr = new QRCode(size);
 qr.attachTo(document.getElementById('preview') as HTMLElement);
 qr.setText('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');
 
@@ -95,10 +97,12 @@ document.querySelectorAll('#preview-tabs .tab-btn').forEach(button => {
     });
 });
 
-const generateCode = () => {
+function generateCode() {
     const code = document.getElementById('code-output');
     if (code) {
         const codeText = `
+import { QRCode, GradientType } from '@galihrivanto/fancy-qr';
+
 const qr = new QRCode(480);
 qr.attachTo(document.getElementById('preview') as HTMLElement);
 
@@ -133,7 +137,7 @@ qr.setData({
 
 }
 
-const preview = () => {
+function preview (){
     qr.setOuterFinder({
         shape: outerFinderShape,
         fill: {
@@ -159,6 +163,22 @@ const preview = () => {
         }
     })
 }
+
+function calculateQrSize (maxSize: number) {
+    const panelSize = document.getElementById('preview')?.clientWidth ?? 0;
+
+    return Math.min(
+        panelSize - 20,
+        maxSize
+    );
+}
+
+window.addEventListener('resize', () => {
+    const qrSize = calculateQrSize(480);
+    qr.setSize(qrSize);
+    preview();
+    generateCode();
+});
 
 preview();
 generateCode();

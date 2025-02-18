@@ -46,6 +46,13 @@ export class QRCode implements IQRCode {
         this._canvas = canvas;
     }
 
+    setSize(size: number): void {
+        this._size = { width: size, height: size };
+        this._canvas.width = size;
+        this._canvas.height = size;
+        this.applyOptions();
+    }
+
     setText(text: string): void {
         this._options.text = text;
         this.applyOptions();

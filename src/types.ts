@@ -159,7 +159,12 @@ export interface IQRCode {
     attachTo(htmlElement: HTMLElement): void;
 
     /**
-     * Sets the text for the QR code.
+     * Sets the size of the QR code.
+     * @param size - The size of the QR code.
+     */
+    setSize(size: number): void;
+
+    /**
      * @param text - The text to set for the QR code.
      */
     setText(text: string): void;
