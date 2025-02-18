@@ -1,3 +1,5 @@
+import { Dictionary } from "@galihrivanto/dict";
+
 export enum ECC {
     LOW = 7,
     MEDIUM = 15,
@@ -90,6 +92,7 @@ export interface IPainter {
 }
 
 export interface IPainterFactory {
+    getNames(type: DataType): string[];
     make(type: DataType, name: string): IPainter;
 }
 
@@ -189,5 +192,5 @@ export interface IQRCode {
      * @param size - image target size in pixels
      * @param type - data type of the QR Code blocks {@link DataType}
      */
-    generateAssets(size: number, type: DataType): Promise<HTMLImageElement[]>;
+    generateAssets(size: number, type: DataType): Dictionary<HTMLImageElement>;
 }

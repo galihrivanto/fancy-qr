@@ -5,11 +5,63 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fancy QR</title>
-    <link rel="stylesheet" href="./src/index.css" />
+    <link rel="stylesheet" href="./examples/style.css" />
   </head>
-  <body>
-    <h1>Fancy QR</h1>
-    <div id="app"></div>
+  <body class="p-4 min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 h-screen">
+    <h1 class="text-2xl font-bold mb-6">Fancy QR</h1>
+    <div class="flex gap-8 h-[calc(100vh-100px)]">
+      <!-- Preview Section -->
+      <div id="preview-tabs" class="flex-1 min-w-[400px] bg-white rounded-lg shadow-md p-4">
+        <div class="border-b border-gray-200">
+          <nav class="flex gap-4" aria-label="Tabs">
+            <button class="tab-btn active px-4 py-2 text-sm font-medium border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700 data-[active=true]:border-blue-500 data-[active=true]:text-blue-600" 
+              data-tab="preview">
+              Preview
+            </button>
+            <button 
+              class="tab-btn px-4 py-2 text-sm font-medium border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700 data-[active=true]:border-blue-500 data-[active=true]:text-blue-600" 
+              data-tab="code">
+              Code
+            </button>
+          </nav>
+        </div>
+        <div class="mt-4">
+          <div id="preview" class="tab-content p-4 flex justify-center items-center h-full"></div>
+          <div id="code" class="tab-content hidden p-4 flex justify-center items-center h-full">
+            <pre class="bg-gray-900 text-green-300 p-4 rounded-lg overflow-x-auto text-sm">
+              <code id="code-output"></code>
+            </pre>
+          </div>
+        </div>
+      </div>
+      <div id="asset-tabs" class="flex-1 min-w-[300px] bg-white rounded-lg shadow-md p-4">
+        <div class="border-b border-gray-200">
+          <nav class="flex gap-4" aria-label="Tabs">
+            <button 
+              class="tab-btn active px-4 py-2 text-sm font-medium border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700 data-[active=true]:border-blue-500 data-[active=true]:text-blue-600" 
+              data-tab="outer-finder">
+              Outer Finder
+            </button>
+            <button 
+              class="tab-btn px-4 py-2 text-sm font-medium border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700 data-[active=true]:border-blue-500 data-[active=true]:text-blue-600" 
+              data-tab="inner-finder">
+              Inner Finder
+            </button>
+            <button 
+              class="tab-btn px-4 py-2 text-sm font-medium border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700 data-[active=true]:border-blue-500 data-[active=true]:text-blue-600" 
+              data-tab="data">
+              Data
+            </button>
+          </nav>
+        </div>
+        <div id="assets" class="mt-4">
+          <div id="outer-finder" class="tab-content grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 block" data-active="true"></div>
+          <div id="inner-finder" class="tab-content grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 hidden"></div>
+          <div id="data" class="tab-content grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 hidden"></div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="./examples/sample.ts"></script>
   </body>
 </html>

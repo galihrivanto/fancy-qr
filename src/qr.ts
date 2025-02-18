@@ -3,6 +3,8 @@ import { Options } from "./options";
 import { PainterFactory } from "./painterFactory";
 import { 
     DataType,
+    ECC,
+    IPainter,
     IPainterFactory,
     LogoPosition,
     type ILogoOptions, 
@@ -12,6 +14,7 @@ import {
     type IShapeOptions, 
     type Size,
 } from "./types";
+import { Dictionary } from "@galihrivanto/dict";
 
 export class QRCode implements IQRCode {
     private _size: Size;
@@ -68,8 +71,52 @@ export class QRCode implements IQRCode {
         this.applyOptions();
     }
 
-    generateAssets(size: number, type: DataType): Promise<HTMLImageElement[]> {
-        throw new Error("Method not implemented.");
+    generateAssets(size: number, type: DataType): Dictionary<HTMLImageElement> {
+        // generate assets for the given type and size
+        // return an array of images
+        const assets: Dictionary<HTMLImageElement> = {};
+        const data = new QRData('', ECC.MEDIUM, {});
+        data.calculatePixelSize(size);
+
+        const draw = (
+            painter: IPainter,
+            canvas: HTMLCanvasElement, 
+            data: IQRData, 
+            bounds: DOMRect, 
+            name: string, 
+            visible: boolean
+        ) => {
+            const color = visible ? '#000000' : '#aaaaaa';
+            painter.paint(canvas, data, bounds, {
+                shape: name,
+                fill: color
+            });
+        }
+
+        this._painterFactory.getNames(type).forEach(name => {
+            const painter = this._painterFactory.make(type, name);
+            const canvas = document.createElement('canvas');
+            const bounds = new DOMRect(0, 0, size, size);
+            canvas.width = size;
+            canvas.height = size;
+
+            [DataType.OuterFinder, DataType.InnerFinder, DataType.Data]
+                .forEach(t => {
+                    if (t !== type) {
+                        const p = this._painterFactory.make(t, 'Default');
+                        draw(p, canvas, data, bounds, 'Default', false);
+                    } else {
+                        draw(painter, canvas, data, bounds, name, true);
+                    }
+                });
+            
+            // Create and configure image element
+            const img = document.createElement('img');
+            img.src = canvas.toDataURL();
+            assets[name] = img;
+        });
+
+        return assets;
     }   
     
     private clearCanvas(): void {
