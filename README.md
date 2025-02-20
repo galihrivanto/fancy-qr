@@ -1,6 +1,10 @@
 <div align="center">
   <h1>Fancy QR</h1>
+
   ![NPM Version](https://img.shields.io/npm/v/%40galihrivanto%2Ffancy-qr)
+  ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/galihrivanto/fancy-qr/build-release.yaml)
+  ![GitHub](https://img.shields.io/github/license/galihrivanto/fancy-qr)
+
 
 <br />
 
