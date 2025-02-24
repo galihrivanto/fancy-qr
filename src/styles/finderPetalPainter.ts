@@ -69,3 +69,52 @@ export class FinderDropPainter extends FinderPetalPainter {
     }
 }
 
+export class FinderStarPainter extends FinderPetalPainter {
+    private spikes: number;
+    constructor(isOuter: boolean, spikes: number) {
+        super(isOuter)
+        this.spikes = spikes
+    }
+
+    private drawStar(ctx: CanvasRenderingContext2D, bounds: DOMRect) {
+        const radius = Math.min(bounds.width, bounds.height) / 2
+        const cx = bounds.x + bounds.width / 2
+        const cy = bounds.y + bounds.height / 2
+        const outerRadius = radius
+        const innerRadius = radius * 0.7
+        const startAngle = -90 * Math.PI / 180 // Start at -90 degrees to point upward
+        const step = Math.PI / this.spikes
+
+        ctx.beginPath()
+        
+        let angle = startAngle
+        for (let i = 0; i < this.spikes * 2; i++) {
+            const hyp = i % 2 === 0 ? outerRadius : innerRadius
+            const x = cx + Math.cos(angle) * hyp
+            const y = cy + Math.sin(angle) * hyp
+            
+            if (i === 0) {
+                ctx.moveTo(x, y)
+            } else {
+                ctx.lineTo(x, y)
+            }
+            angle += step
+        }
+
+        ctx.closePath()
+        ctx.fill()
+    }
+
+    protected drawFinder(ctx: CanvasRenderingContext2D, encodedData: IQRData, outerBounds: DOMRect, innerBounds: DOMRect) {
+        if (this.isOuter) {
+            ctx.save()
+            this.drawStar(ctx, outerBounds)
+            ctx.globalCompositeOperation = 'destination-out'
+            this.drawStar(ctx, new DOMRect(innerBounds.x - innerBounds.width / 3, innerBounds.y - innerBounds.height / 3 , innerBounds.width * 5/3, innerBounds.height * 5/3))
+            ctx.restore()
+        } else {
+            this.drawStar(ctx, innerBounds)
+        }
+    }
+}
+

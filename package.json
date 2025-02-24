@@ -1,6 +1,6 @@
 {
   "name": "@galihrivanto/fancy-qr",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A QR code generator with fancy styles options.",
   "type": "module",
   "main": "./dist/fancyqr.es.js",

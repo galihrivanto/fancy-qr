@@ -12,7 +12,8 @@ import {
     FinderDefaultPainter, 
     FinderDropPainter, 
     FinderPetalPainter, 
-    FinderRoundedSquarePainter 
+    FinderRoundedSquarePainter, 
+    FinderStarPainter
 } from "./styles";
 import { 
     DataType, 
@@ -58,6 +59,10 @@ export class PainterFactory implements IPainterFactory {
             make('OuterFinder.Drop', () => new FinderDropPainter(true)),
             make('OuterFinder.Circle', () => new FinderCirclePainter(true)),
             make('OuterFinder.RoundedSquare', () => new FinderRoundedSquarePainter(true)),
+            make('OuterFinder.Diamond', () => new FinderStarPainter(true, 4)),
+            make('OuterFinder.SixStar', () => new FinderStarPainter(true, 6)),
+            make('OuterFinder.EightStar', () => new FinderStarPainter(true, 8)),
+            make('OuterFinder.TenStar', () => new FinderStarPainter(true, 10)),
         ]
 
         this._innerFinderPainters = [
@@ -66,6 +71,10 @@ export class PainterFactory implements IPainterFactory {
             make('InnerFinder.Drop', () => new FinderDropPainter(false)),
             make('InnerFinder.Circle', () => new FinderCirclePainter(false)),
             make('InnerFinder.RoundedSquare', () => new FinderRoundedSquarePainter(false)),
+            make('InnerFinder.Diamond', () => new FinderStarPainter(false, 4)),
+            make('InnerFinder.SixStar', () => new FinderStarPainter(false, 6)),
+            make('InnerFinder.EightStar', () => new FinderStarPainter(false, 8)),
+            make('InnerFinder.TenStar', () => new FinderStarPainter(false, 10)),
         ]
 
         this._dataPainters = [
