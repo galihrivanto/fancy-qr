@@ -55,9 +55,42 @@
           </nav>
         </div>
         <div id="assets" class="mt-4">
-          <div id="outer-finder" class="tab-content grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 block" data-active="true"></div>
-          <div id="inner-finder" class="tab-content grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 hidden"></div>
-          <div id="data" class="tab-content grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 hidden"></div>
+          <div id="outer-finder" class="tab-content flex flex-col gap-4 block" data-active="true">
+            <div class="flex gap-4">
+              <select id="gradient-type">
+                <option value="linear">Linear</option>
+                <option value="radial" selected>Radial</option>
+              </select>
+              <input type="color" id="gradient-from" value="#ff0000" />
+              <input type="color" id="gradient-to" value="#0000ff" />
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            </div>
+          </div>
+          <div id="inner-finder" class="tab-content flex flex-col gap-4 hidden">
+            <div class="flex gap-4">
+              <select id="gradient-type">
+                <option value="linear">Linear</option>
+                <option value="radial" selected>Radial</option>
+              </select>
+              <input type="color" id="gradient-from" value="#ff0000" />
+              <input type="color" id="gradient-to" value="#0000ff" />
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            </div>
+          </div>
+          <div id="data" class="tab-content flex flex-col gap-4 hidden">
+            <div class="flex gap-4">
+              <select id="gradient-type">
+                <option value="linear">Linear</option>
+                <option value="radial" selected>Radial</option>
+              </select>
+              <input type="color" id="gradient-from" value="#ff0000" />
+              <input type="color" id="gradient-to" value="#0000ff" />
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            </div>
+          </div>
         </div>
       </div>
     </div>
