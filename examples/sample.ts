@@ -3,9 +3,18 @@ import { DataType, GradientType, QRCode } from "../src";
 let innerFinderShape: string = 'InnerFinder.Drop';
 let outerFinderShape: string = 'OuterFinder.Drop';
 let dataShape: string = 'Data.Circle';
+let innerFinderGradientType: GradientType = GradientType.Radial;
+let outerFinderGradientType: GradientType = GradientType.Radial;
+let dataGradientType: GradientType = GradientType.Radial;
+let innerFinderGradientFrom: string = '#ff0000';
+let innerFinderGradientTo: string = '#0000ff';
+let outerFinderGradientFrom: string = '#ff0000';
+let outerFinderGradientTo: string = '#0000ff';
+let dataGradientFrom: string = '#ff0000';
+let dataGradientTo: string = '#0000ff';
+
 
 const size = calculateQrSize(512);
-console.log('size', size);
 const qr = new QRCode(size);
 qr.attachTo(document.getElementById('preview') as HTMLElement);
 qr.setText('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');
@@ -22,7 +31,7 @@ Object.entries(qr.generateAssets(128, DataType.OuterFinder)).forEach(([name, ass
         preview();
         generateCode();
     });
-    document.getElementById('outer-finder')?.appendChild(assetElement);
+    document.querySelector('#outer-finder .grid')?.appendChild(assetElement);
 });
 
 Object.entries(qr.generateAssets(128, DataType.InnerFinder)).forEach(([name, asset]) => {
@@ -36,7 +45,7 @@ Object.entries(qr.generateAssets(128, DataType.InnerFinder)).forEach(([name, ass
         preview();
         generateCode();
     });
-    document.getElementById('inner-finder')?.appendChild(assetElement);
+    document.querySelector('#inner-finder .grid')?.appendChild(assetElement);
 });
 
 Object.entries(qr.generateAssets(128, DataType.Data)).forEach(([name, asset]) => {
@@ -50,7 +59,25 @@ Object.entries(qr.generateAssets(128, DataType.Data)).forEach(([name, asset]) =>
         preview();
         generateCode();
     });
-    document.getElementById('data')?.appendChild(assetElement);
+    document.querySelector('#data .grid')?.appendChild(assetElement);
+});
+
+document.querySelector('#outer-finder #gradient-type')?.addEventListener('change', (event) => {
+    outerFinderGradientType = toGradientType(event.target?.value as string);
+    preview();
+    generateCode();
+});
+
+document.querySelector('#inner-finder #gradient-type')?.addEventListener('change', (event) => {
+    innerFinderGradientType = toGradientType(event.target?.value as string);
+    preview();
+    generateCode();
+});
+
+document.querySelector('#data #gradient-type')?.addEventListener('change', (event) => {
+    dataGradientType = toGradientType(event.target?.value as string);
+    preview();
+    generateCode();
 });
 
 document.querySelectorAll('#asset-tabs .tab-btn').forEach(button => {
@@ -110,56 +137,62 @@ qr.setText('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eius
 qr.setOuterFinder({
     shape: ${outerFinderShape},
     fill: {
-        type: GradientType.Radial,
-        from: 'red',
-        to: 'blue'
+        type: ${toGradientStringType(outerFinderGradientType)},
+        from: '${outerFinderGradientFrom}',
+        to: '${outerFinderGradientTo}'
     }
 });
 qr.setInnerFinder({
     shape: ${innerFinderShape},
     fill: {
-        type: GradientType.Radial,
-        from: 'red',
-        to: 'blue'
+        type: ${toGradientStringType(innerFinderGradientType)},
+        from: '${innerFinderGradientFrom}',
+        to: '${innerFinderGradientTo}'
     }
 qr.setData({
     shape: ${dataShape},
     fill: {
-        type: GradientType.Radial,
-        from: 'red',
-        to: 'blue'
+        type: ${toGradientStringType(dataGradientType)},
+        from: '${dataGradientFrom}',
+        to: '${dataGradientTo}'
     }
 })`
 
         code.innerHTML = codeText;
     }
+}
 
+function toGradientType(type: string): GradientType {
+    return type === 'linear' ? GradientType.Linear : GradientType.Radial;
+}
 
+function toGradientStringType(type: GradientType): string {
+    return type === GradientType.Linear ? 'GradientType.Linear' : 'GradientType.Radial';
 }
 
 function preview (){
     qr.setOuterFinder({
         shape: outerFinderShape,
         fill: {
-            type: GradientType.Radial,
-            from: 'red',
-            to: 'blue'
+            type: outerFinderGradientType,
+            from: outerFinderGradientFrom,
+            to: outerFinderGradientTo
         }
     });
     qr.setInnerFinder({
         shape: innerFinderShape,
         fill: {
-            type: GradientType.Radial,
-            from: 'red',
-            to: 'blue'
+            type: innerFinderGradientType,
+            from: innerFinderGradientFrom,
+            to: innerFinderGradientTo
         }
     })
     qr.setData({
         shape: dataShape,
         fill: {
-            type: GradientType.Radial,
-            from: 'red',
-            to: 'blue'
+            type: dataGradientType,
+            from: dataGradientFrom,
+            to: dataGradientTo
         }
     })
 }
